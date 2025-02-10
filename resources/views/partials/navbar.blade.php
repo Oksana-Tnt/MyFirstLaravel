@@ -16,7 +16,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{route('create')}}">Add new pizza</a>
                 </li>
-
             </ul>
         </div>
     </div>

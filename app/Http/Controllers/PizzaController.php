@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pizza;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PizzaController extends Controller
 {
@@ -20,13 +21,22 @@ class PizzaController extends Controller
     }
     public function store(Request $request)
     {
-        $request->validate([
+
+        print_r($request->thumbnail);
+        $validated = $request->validate([
             'gusto' => 'required|max:255',
             'prezzo' => 'required|numeric|min:0',
-            'available' => 'required|numeric|min:0|max:1'
+            'available' => 'required|numeric|min:0|max:1',
+            'thumbnail' => 'image|max:2048'
         ]);
 
-        Pizza::create($request->only(['gusto', 'prezzo', 'available']));
+        if ($request->hasFile('thumbnail')) {
+            $fileName = $request->file('thumbnail')->getClientOriginalName();
+            $validated['thumbnail'] = $request->file('thumbnail')->storeAs('uploads', $fileName, 'public');
+            // $validated['thumbnail'] = $request->file('thumbnail')->store('uploads', 'public');
+        }
+
+        Pizza::create($validated);
 
         return redirect()->route('pizze')->with('success', 'Pizza creata con successo');
     }
